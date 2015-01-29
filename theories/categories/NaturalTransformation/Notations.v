@@ -1,0 +1,12 @@
+(** * Notations for natural transformations *)
+Require NaturalTransformation.Composition.
+Require NaturalTransformation.Dual.
+Require NaturalTransformation.Identity.
+Require NaturalTransformation.Prod.
+Require NaturalTransformation.Sum.
+
+Include NaturalTransformation.Composition.NaturalTransformationCompositionNotations.
+Include NaturalTransformation.Dual.NaturalTransformationDualNotations.
+Include NaturalTransformation.Identity.NaturalTransformationIdentityNotations.
+Include NaturalTransformation.Prod.NaturalTransformationProdNotations.
+Include NaturalTransformation.Sum.NaturalTransformationSumNotations.
