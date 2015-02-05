@@ -17,7 +17,7 @@ Generalizable All Variables.
 Set Asymmetric Patterns.
 
 Local Open Scope path_scope.
-Local Open Scope equiv_scope.
+
 Local Open Scope morphism_scope.
 Local Open Scope category_scope.
 Local Open Scope functor_scope.
@@ -72,7 +72,7 @@ Section AdjunctionEquivalences.
   End adjunction_naturality.
 
   (**
-     Quoting from Awody's "Category Theory":
+     Quoting from Awodey's "Category Theory":
 
      Proposition 9.4. Given categories and functors,
 

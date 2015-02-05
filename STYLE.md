@@ -1,3 +1,60 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [Conventions And Style Guide](#)
+	- [Organization](#)
+		- [The Core library](#)
+		- [Non-core files](#)
+	- [Naming Conventions](#)
+		- [General principles](#)
+		- [Capitalization and spacing](#)
+		- [Suffixes](#)
+		- [Induction and recursion principles](#)
+		- [Path algebra functions](#)
+		- [Equivalences](#)
+	- [Records, Structures, Typeclasses](#)
+		- [Two-component records](#)
+		- [Typeclasses](#)
+		- [When to declare instances](#)
+		- [Local and Global Instances](#)
+		- [Using Typeclasses](#)
+		- [Truncation](#)
+		- [Coercions and Existing Instances](#)
+	- [Axioms](#)
+		- [Univalence and function extensionality](#)
+		- [Higher inductive types](#)
+		- [Relationships between axioms](#)
+		- [Assuming axioms](#)
+		- [Technical note: Universe-polymorphic axioms](#)
+	- [Higher Inductive Types](#)
+	- [Universe Polymorphism](#)
+		- [Displaying universes](#)
+		- [Universe annotations](#)
+		- [Unexpected universes](#)
+		- [Lifting and lowering](#)
+		- [Universes and HITs](#)
+	- [Transparency and Opacity](#)
+	- [Formatting](#)
+		- [Location of commands](#)
+		- [Indentation](#)
+		- [Line lengths](#)
+		- [Tactic scripts](#)
+		- [Placement of Arguments and types](#)
+	- [Implicit Arguments](#)
+	- [Coding Hints](#)
+		- [Notations](#)
+		- [Unfolding definitions](#)
+		- [Finding theorems](#)
+		- [Simpl nomatch](#)
+		- [Available tactics](#)
+	- [Contributing to the library](#)
+		- [Fork & Pull](#)
+		- [Two pairs of eyes](#)
+		- [Commit messages](#)
+		- [Creating new files](#)
+		- [Travis](#)
+		- [Git rebase](#)
+		- [Timing scripts](#)
+
 # Conventions And Style Guide #
 
 ## Organization ##
@@ -231,7 +288,7 @@ hprop.  For instance, this has the advantage that we do not need new
 names for its constructor and its fields, and we can apply theorems in
 `Types/Sigma` to it directly rather than via `issig`.
 
-TODO: Decide about `hProp` and `hSet` and `TruncType` (issue #514).
+TODO: Decide about `hProp` and `hSet` and `TruncType` (issue [#514](https://github.com/HoTT/HoTT/issues/514)).
 
 ### Typeclasses ###
 
@@ -328,6 +385,14 @@ do and later on someone introduces a new unnamed hypothesis that Coq
 names `H`, your name will result in a conflict.  Conversely, we
 sometimes give a hypothesis a name that won't be used, to pre-empt
 such conflicts, such as `{ua : Univalence}` or `{fs : Funext}`.
+
+One gotcha about typeclass arguments is that they cannot be inferred automatically when preceeded by non-implicit arguments.  So for instance if we write
+
+```coq
+Definition foo (A : Type) `{Funext}
+```
+
+then the `Funext` argument will not generally be inferrable.  Thus, typeclass arguments should generally come first if possible.  In addition, note that when section variables are generalized at the close of a section, they appear first.  Thus, if anything in a section requires `Funext` or `Univalence`, those hypotheses should go in the `Context` at the top of the section in order that they'll come first in the eventual argument lists.
 
 ### Truncation ###
 
@@ -456,7 +521,8 @@ something you generally need to worry about; see the comments in
 
 At present, higher inductive types are restricted to the `hit/`
 directory, and are all defined using [Dan Licata's "private inductive
-types" hack][hit-hack].  This means the procedure for defining a HIT is:
+types" hack][hit-hack] which was [implemented in Coq](https://coq.inria.fr/files/coq5_submission_3.pdf) by Yves Bertot.
+This means the procedure for defining a HIT is:
 
 1. Wrap the entire definition in a module, which you will usually want
    to export to the rest of the file containing the definition.
@@ -984,20 +1050,26 @@ where they are defined.
   automatically.  If you need a version with more fields than yet
   exists, feel free to add it.)
 
-- `rapply`, `erapply`: Defined in `coq/theories/Program/Tactics` and
-  `Basics/Overture` respectively, these tactics are more well-behaved
-  variants of `apply` for theorems with fewer than 16 arguments.  (It
-  is trivial to extend it to *n* arguments for any finite fixed *n*.)
-  The unification algorithm used by `apply` is different and often
-  less powerful than the one used by `refine`, though it is
-  occasionally better at pattern matching.  If `apply` fails with a
-  unification error you think it shouldn't have, try `rapply` or
-  `erapply`.
+- `rapply`, `rapply'`, `erapply`, `erapply': Defined in
+  `coq/theories/Program/Tactics` and `Basics/Overture`, these tactics
+  are more well-behaved variants of `apply` for theorems with fewer
+  than 16 arguments.  (It is trivial to extend it to *n* arguments for
+  any finite fixed *n*.)  The unification algorithm used by `apply` is
+  different and often less powerful than the one used by `refine`,
+  though it is occasionally better at pattern matching.  If `apply`
+  fails with a unification error you think it shouldn't have, try
+  `rapply` or `erapply`.  If `rapply` or `erapply` loops on, say,
+  typeclass resolution, try `rapply'` or `erapply'`.  In particular,
+  when the lemma you are applying constructs an equivalence,
+  `(e)rapply` will tend to apply the underlying function to the goal,
+  while `(e)rapply'` will tend to apply the construction of the
+  equivalence itself.
 
-  The difference between `rapply` and `erapply` is that `rapply` only
-  accepts lemmas with no holes (and will do typeclass inference
-  early), while `erapply` accepts lemmas with holes (such as `ap f`,
-  i.e., `@ap _ _ f _ _`), and does typeclass inference late.
+  The difference between `rapply(')` and `erapply(')` is that
+  `rapply(')` only accepts lemmas with no holes (and will do typeclass
+  inference early), while `erapply(')` accepts lemmas with holes (such
+  as `ap f`, i.e., `@ap _ _ f _ _`), and does typeclass inference
+  late.
 
 ## Contributing to the library ##
 
